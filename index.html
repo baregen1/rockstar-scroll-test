@@ -319,13 +319,13 @@
                 
                 // State management
                 this.isLoaded = false;
-                this.isSeeking = false;
                 this.targetTime = 0;
                 this.currentTime = 0;
                 this.videoDuration = 0;
                 this.animationFrameId = null;
                 this.currentAlpha = 1;
                 this.targetAlpha = 1;
+                this.lastDrawnTime = -1;
                 
                 // Device detection
                 this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -338,7 +338,6 @@
                 // Video events
                 this.video.addEventListener('loadedmetadata', () => this.onLoadedMetadata());
                 this.video.addEventListener('seeked', () => this.onSeeked());
-                this.video.addEventListener('seeking', () => { this.isSeeking = true; });
                 
                 // Initial load for iOS/Safari
                 this.initializeVideo();
@@ -378,20 +377,16 @@
             }
 
             onSeeked() {
-                this.isSeeking = false;
                 this.currentTime = this.video.currentTime;
+                this.lastDrawnTime = this.currentTime;
                 this.drawFrame();
             }
 
             drawFrame() {
-                if (!this.isLoaded) return;
+                if (!this.isLoaded || this.video.seeking) return;
                 
                 try {
-                    // Fill background
-                    this.ctx.fillStyle = '#000000';
-                    this.ctx.fillRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
-                    
-                    // Draw video frame if ready with alpha fade
+                    // Only draw if video is ready and has a valid frame
                     if (this.video.readyState >= 2 && this.currentAlpha > 0.01) {
                         const canvasWidth = this.canvas.clientWidth;
                         const canvasHeight = this.canvas.clientHeight;
@@ -412,9 +407,13 @@
                             drawY = (canvasHeight - drawHeight) / 2;
                         }
                         
-                        this.ctx.globalAlpha = this.currentAlpha;
-                        this.ctx.drawImage(this.video, drawX, drawY, drawWidth, drawHeight);
-                        this.ctx.globalAlpha = 1;
+                        // Only draw if alpha > 0
+                        if (this.currentAlpha > 0) {
+                            this.ctx.globalAlpha = this.currentAlpha;
+                            this.ctx.drawImage(this.video, drawX, drawY, drawWidth, drawHeight);
+                            this.ctx.globalAlpha = 1;
+                            this.lastDrawnTime = this.video.currentTime;
+                        }
                     }
                 } catch (error) {
                     console.warn('Canvas draw error:', error);
@@ -451,8 +450,9 @@
                     // Smooth alpha interpolation
                     this.currentAlpha = this.lerp(this.currentAlpha, this.targetAlpha, 0.1);
                     
-                    // Seek guard: only seek if not already seeking and difference is significant
-                    if (!this.isSeeking && Math.abs(this.currentTime - this.video.currentTime) > 0.02) {
+                    // Robust seeking guard: only seek if video is NOT currently seeking and the difference is meaningful (0.03 seconds)
+                    const SEEK_THRESHOLD = 0.03;
+                    if (!this.video.seeking && Math.abs(this.currentTime - this.video.currentTime) > SEEK_THRESHOLD) {
                         try {
                             this.video.currentTime = this.currentTime;
                         } catch (error) {
@@ -460,8 +460,11 @@
                         }
                     }
                     
-                    // Draw current frame
-                    this.drawFrame();
+                    // Draw current frame only if video is not seeking
+                    // This prevents black screen flicker during rapid seeks in Chrome
+                    if (!this.video.seeking) {
+                        this.drawFrame();
+                    }
                     
                     // Update global progress bar
                     const totalScroll = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
