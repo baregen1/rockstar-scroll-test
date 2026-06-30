@@ -42,11 +42,12 @@
             width: 100%;
         }
 
-        /* Video Sections */
+        /* Layered Video Section */
         .video-section {
             position: relative;
             height: 300vh;
             width: 100%;
+            background-color: var(--bg-color);
         }
 
         .video-wrapper {
@@ -56,6 +57,7 @@
             width: 100%;
             height: 100vh;
             overflow: hidden;
+            z-index: 1;
         }
 
         canvas {
@@ -63,6 +65,26 @@
             width: 100%;
             height: 100%;
             background-color: var(--bg-color);
+        }
+
+        /* Content overlay block (scrolls up naturally) */
+        .content-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-color);
+            z-index: 2;
+        }
+
+        .content-overlay-inner {
+            width: 100%;
+            height: 100%;
+            padding: 3rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Hidden video elements for data only */
@@ -76,74 +98,86 @@
             pointer-events: none;
         }
 
-        /* Intermission Sections */
-        .intermission {
-            background-color: var(--bg-color);
-            padding: 8rem 2rem;
+        /* Card Grid */
+        .cards-container {
             width: 100%;
-        }
-
-        .intermission-content {
             max-width: 1200px;
-            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
         }
 
         .card {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 4rem;
-            margin-bottom: 3rem;
-            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+
+        .card-artwork {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #141720;
+            margin-bottom: 2rem;
+        }
+
+        .card.vintage-vice .card-artwork {
+            background-color: #242B3F;
         }
 
         .card-title {
-            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: -0.01em;
+            line-height: 1.2;
             margin-bottom: 2rem;
             color: var(--text-color);
         }
 
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .card-item {
-            font-size: 0.9rem;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.7);
-            border-top: 1px solid rgba(102, 187, 153, 0.3);
-            padding-top: 1.5rem;
-        }
-
-        .card-item-label {
+        .card-button {
+            align-self: flex-start;
+            background-color: transparent;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 0.875rem 2rem;
             font-size: 0.75rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font-stack);
+            transition: all 0.2s ease;
         }
 
-        .card-item-value {
-            font-size: 1.25rem;
-            color: var(--text-color);
-            font-weight: 700;
+        .card-button:hover {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            border-color: var(--text-color);
         }
 
-        /* Text Section */
-        .text-section {
-            background-color: var(--bg-color);
-            padding: 8rem 2rem;
+        .card-button:active {
+            opacity: 0.8;
+        }
+
+        /* Text Content Block */
+        .text-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
             width: 100%;
+            height: 100vh;
+            background-color: var(--bg-color);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .text-content {
             max-width: 800px;
-            margin: 0 auto;
+            padding: 3rem 2rem;
+            width: 100%;
         }
 
         .section-header {
@@ -151,20 +185,15 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             color: var(--text-color);
             line-height: 1.2;
-        }
-
-        .section-header.accent {
-            color: var(--accent-color);
         }
 
         .section-paragraph {
             font-size: 1.1rem;
             line-height: 1.8;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.85);
         }
 
         /* Scroll Indicator */
@@ -199,20 +228,18 @@
         }
 
         @media (max-width: 768px) {
-            .intermission {
-                padding: 4rem 1.5rem;
-            }
-
-            .card {
-                padding: 2rem;
-            }
-
-            .card-grid {
+            .cards-container {
                 grid-template-columns: 1fr;
+                gap: 3rem;
+                padding: 0 1.5rem;
             }
 
-            .text-section {
-                padding: 4rem 1.5rem;
+            .content-overlay-inner {
+                padding: 2rem 1.5rem;
+            }
+
+            .text-content {
+                padding: 2rem 1.5rem;
             }
 
             .scroll-indicator {
@@ -230,7 +257,7 @@
 <body>
 
     <div class="scroll-container">
-        <!-- Stage 1: First Video Scroll -->
+        <!-- Stage 1: Video Scroll with Card Overlay -->
         <section class="video-section" id="section-1">
             <div class="video-wrapper">
                 <canvas id="canvas-1"></canvas>
@@ -238,58 +265,27 @@
                     <source src="2160.09zxlcbb6vg7y.mp4" type="video/mp4">
                 </video>
             </div>
-        </section>
-
-        <!-- Stage 1 Intermission: Premium Cards -->
-        <section class="intermission">
-            <div class="intermission-content">
-                <div class="card">
-                    <div class="card-title">Ultimate Edition</div>
-                    <div class="card-grid">
-                        <div class="card-item">
-                            <div class="card-item-label">Price</div>
-                            <div class="card-item-value">$69.99</div>
+            
+            <div class="content-overlay">
+                <div class="content-overlay-inner">
+                    <div class="cards-container">
+                        <div class="card">
+                            <div class="card-artwork"></div>
+                            <h3 class="card-title">Ultimate Edition</h3>
+                            <button class="card-button">Learn More</button>
                         </div>
-                        <div class="card-item">
-                            <div class="card-item-label">Platform</div>
-                            <div class="card-item-value">Multi-Platform</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-item-label">Included</div>
-                            <div class="card-item-value">All Content</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-item-label">Status</div>
-                            <div class="card-item-value">Available Now</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Vintage Vice City Pack</div>
-                    <div class="card-grid">
-                        <div class="card-item">
-                            <div class="card-item-label">Format</div>
-                            <div class="card-item-value">Physical</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-item-label">Editions</div>
-                            <div class="card-item-value">Limited Run</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-item-label">Collectibles</div>
-                            <div class="card-item-value">Included</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-item-label">Exclusivity</div>
-                            <div class="card-item-value">Premium</div>
+                        
+                        <div class="card vintage-vice">
+                            <div class="card-artwork"></div>
+                            <h3 class="card-title">Vintage Vice City Pack</h3>
+                            <button class="card-button">Learn More</button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Stage 2: Second Video Scroll -->
+        <!-- Stage 2: Video Scroll with Text Overlay -->
         <section class="video-section" id="section-2">
             <div class="video-wrapper">
                 <canvas id="canvas-2"></canvas>
@@ -297,13 +293,12 @@
                     <source src="2160.09zxlcbb6vg7y.mp4" type="video/mp4">
                 </video>
             </div>
-        </section>
-
-        <!-- Stage 2 Intermission: Cinematic Text -->
-        <section class="text-section">
-            <div class="text-content">
-                <h2 class="section-header">Vice City, USA.</h2>
-                <p class="section-paragraph">Jason and Lucia have always known the deck is stacked against them. But when an easy score goes wrong, they find themselves on the darkest side of the sunniest place in America, in the middle of a criminal conspiracy stretching across the state of Leonida — forced to rely on each other more than ever if they want to make it out alive.</p>
+            
+            <div class="text-overlay">
+                <div class="text-content">
+                    <h2 class="section-header">Vice City, USA.</h2>
+                    <p class="section-paragraph">Jason and Lucia have always known the deck is stacked against them. But when an easy score goes wrong, they find themselves on the darkest side of the sunniest place in America, in the middle of a criminal conspiracy stretching across the state of Leonida — forced to rely on each other more than ever if they want to make it out alive.</p>
+                </div>
             </div>
         </section>
     </div>
@@ -315,13 +310,12 @@
     <div class="ui-label">Scroll to Experience</div>
 
     <script>
-        class MultiStageScrollScrubber {
-            constructor(sectionId, videoId, canvasId, fadeStartPercent = 0.8) {
+        class LayeredScrollScrubber {
+            constructor(sectionId, videoId, canvasId) {
                 this.section = document.getElementById(sectionId);
                 this.video = document.getElementById(videoId);
                 this.canvas = document.getElementById(canvasId);
                 this.ctx = this.canvas.getContext('2d');
-                this.fadeStartPercent = fadeStartPercent;
                 
                 // State management
                 this.isLoaded = false;
@@ -346,7 +340,7 @@
                 this.video.addEventListener('seeked', () => this.onSeeked());
                 this.video.addEventListener('seeking', () => { this.isSeeking = true; });
                 
-                // Initial load for iOS/Safari: play briefly to force GPU decode
+                // Initial load for iOS/Safari
                 this.initializeVideo();
                 
                 // Start animation loop
@@ -438,17 +432,17 @@
                     const rect = this.section.getBoundingClientRect();
                     const scrollPercent = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
                     
-                    // Calculate target time based on scroll
+                    // Map scroll to video time across full 300vh
                     this.targetTime = scrollPercent * this.videoDuration;
                     
                     // Smooth interpolation (lerp)
                     this.currentTime = this.lerp(this.currentTime, this.targetTime, 0.15);
                     
-                    // Calculate fade: start fading at fadeStartPercent (default 80%)
-                    if (scrollPercent >= this.fadeStartPercent) {
-                        // Fade from 1 to 0 between 80% and 100%
-                        const fadeRange = 1 - this.fadeStartPercent;
-                        const fadeProgress = (scrollPercent - this.fadeStartPercent) / fadeRange;
+                    // Calculate fade: opacity fades from 1.0 to 0.0 between 66% (200vh) and 100% (300vh)
+                    const fadeStartPercent = 0.66;
+                    if (scrollPercent >= fadeStartPercent) {
+                        const fadeRange = 1 - fadeStartPercent;
+                        const fadeProgress = (scrollPercent - fadeStartPercent) / fadeRange;
                         this.targetAlpha = Math.max(0, 1 - fadeProgress);
                     } else {
                         this.targetAlpha = 1;
@@ -457,7 +451,7 @@
                     // Smooth alpha interpolation
                     this.currentAlpha = this.lerp(this.currentAlpha, this.targetAlpha, 0.1);
                     
-                    // Seek guard
+                    // Seek guard: only seek if not already seeking and difference is significant
                     if (!this.isSeeking && Math.abs(this.currentTime - this.video.currentTime) > 0.02) {
                         try {
                             this.video.currentTime = this.currentTime;
@@ -494,8 +488,8 @@
         }
 
         // Initialize both scrubbers
-        const scrubber1 = new MultiStageScrollScrubber('section-1', 'video-1', 'canvas-1', 0.8);
-        const scrubber2 = new MultiStageScrollScrubber('section-2', 'video-2', 'canvas-2', 0.8);
+        const scrubber1 = new LayeredScrollScrubber('section-1', 'video-1', 'canvas-1');
+        const scrubber2 = new LayeredScrollScrubber('section-2', 'video-2', 'canvas-2');
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
