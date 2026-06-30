@@ -2,7 +2,9 @@
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Scroll-Bound Scrubbing | Rockstar Test</title>
     <style>
         :root {
@@ -16,6 +18,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -24,6 +29,9 @@
             font-family: var(--font-stack);
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
+            width: 100vw;
+            height: 100vh;
         }
 
         .scroll-container {
@@ -33,7 +41,7 @@
 
         .video-section {
             position: relative;
-            height: 400vh; /* Scroll length for scrubbing */
+            height: 400vh;
             width: 100%;
         }
 
@@ -44,69 +52,24 @@
             width: 100%;
             height: 100vh;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        video {
-            min-width: 100%;
-            min-height: 100%;
-            object-fit: cover;
-            pointer-events: none;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
+        canvas {
+            display: block;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
-            z-index: 10;
+            background-color: var(--bg-color);
+        }
+
+        /* Fallback video element (hidden, used for data only) */
+        video {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            visibility: hidden;
             pointer-events: none;
-        }
-
-        .content-block {
-            max-width: 800px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .content-block.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        h1 {
-            font-size: clamp(2rem, 8vw, 5rem);
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: -0.02em;
-            line-height: 1;
-            margin-bottom: 1rem;
-        }
-
-        p {
-            font-size: 1.25rem;
-            font-weight: 400;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.5;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .accent-line {
-            width: 60px;
-            height: 4px;
-            background-color: var(--accent-color);
-            margin: 2rem auto;
         }
 
         .scroll-indicator {
@@ -136,51 +99,19 @@
             letter-spacing: 0.2em;
             color: var(--accent-color);
             z-index: 100;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
     <div class="scroll-container">
-        <!-- Section 1: 2160.09zxlcbb6vg7y.mp4 -->
         <section class="video-section" id="section-1">
             <div class="video-wrapper">
-                <video id="video-1" muted playsinline preload="auto">
+                <canvas id="canvas-1"></canvas>
+                <video id="video-1" muted playsinline preload="auto" crossorigin="anonymous">
                     <source src="2160.09zxlcbb6vg7y.mp4" type="video/mp4">
                 </video>
-                <div class="overlay">
-                    <div class="content-block" data-start="0.1" data-end="0.4">
-                        <h1>Optimised Motion</h1>
-                        <div class="accent-line"></div>
-                        <p>High-performance scrubbing for a cinematic experience, localised for modern browsers.</p>
-                    </div>
-                    <div class="content-block" data-start="0.6" data-end="0.9">
-                        <h1>Seamless Detail</h1>
-                        <div class="accent-line"></div>
-                        <p>Frame-perfect precision prioritised through smooth interpolation loops.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section 2: 3840.0.3c7d3ekv5.b.mp4 -->
-        <section class="video-section" id="section-2">
-            <div class="video-wrapper">
-                <video id="video-2" muted playsinline preload="auto">
-                    <source src="3840.0.3c7d3ekv5.b.mp4" type="video/mp4">
-                </video>
-                <div class="overlay">
-                    <div class="content-block" data-start="0.1" data-end="0.4">
-                        <h1>4K Visuals</h1>
-                        <div class="accent-line"></div>
-                        <p>Pushing the boundaries of browser-based storytelling with raw power.</p>
-                    </div>
-                    <div class="content-block" data-start="0.6" data-end="0.9">
-                        <h1>Rockstar Tech</h1>
-                        <div class="accent-line"></div>
-                        <p>A minimalist approach to complex interaction design.</p>
-                    </div>
-                </div>
             </div>
         </section>
     </div>
@@ -189,65 +120,185 @@
         <div class="scroll-progress" id="progress-bar"></div>
     </div>
 
-    <div class="ui-label">System Active // Localised Engine</div>
+    <div class="ui-label">Scroll to Scrub</div>
 
     <script>
-        const sections = [
-            { id: 'section-1', video: 'video-1' },
-            { id: 'section-2', video: 'video-2' }
-        ];
-
-        const lerp = (start, end, amt) => (1 - amt) * start + amt * end;
-
-        sections.forEach(section => {
-            const container = document.getElementById(section.id);
-            const video = document.getElementById(section.video);
-            const contentBlocks = container.querySelectorAll('.content-block');
-            
-            let targetTime = 0;
-            let currentTime = 0;
-            let isLoaded = false;
-
-            video.addEventListener('loadedmetadata', () => {
-                isLoaded = true;
-            });
-
-            const update = () => {
-                if (!isLoaded) {
-                    requestAnimationFrame(update);
-                    return;
-                }
-
-                const rect = container.getBoundingClientRect();
-                const scrollPercent = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
+        class ScrollScrubber {
+            constructor(sectionId, videoId, canvasId) {
+                this.section = document.getElementById(sectionId);
+                this.video = document.getElementById(videoId);
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
                 
-                targetTime = scrollPercent * video.duration;
-                currentTime = lerp(currentTime, targetTime, 0.1);
+                // State management
+                this.isLoaded = false;
+                this.isSeking = false;
+                this.targetTime = 0;
+                this.currentTime = 0;
+                this.videoDuration = 0;
+                this.animationFrameId = null;
                 
-                // Only update video time if the difference is significant to avoid jitter
-                if (Math.abs(currentTime - video.currentTime) > 0.01) {
-                    video.currentTime = currentTime;
-                }
+                // Device detection
+                this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                this.isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+                
+                // Resize canvas to match container
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // Video events
+                this.video.addEventListener('loadedmetadata', () => this.onLoadedMetadata());
+                this.video.addEventListener('seeked', () => this.onSeeked());
+                this.video.addEventListener('seeking', () => { this.isSeeking = true; });
+                
+                // Initial load for iOS/Safari: play briefly to force GPU decode
+                this.initializeVideo();
+                
+                // Start animation loop
+                this.startAnimationLoop();
+            }
 
-                // Handle Overlay Visibility
-                contentBlocks.forEach(block => {
-                    const start = parseFloat(block.dataset.start);
-                    const end = parseFloat(block.dataset.end);
-                    if (scrollPercent >= start && scrollPercent <= end) {
-                        block.classList.add('visible');
-                    } else {
-                        block.classList.remove('visible');
+            resizeCanvas() {
+                this.canvas.width = this.canvas.clientWidth * window.devicePixelRatio;
+                this.canvas.height = this.canvas.clientHeight * window.devicePixelRatio;
+                this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+
+            initializeVideo() {
+                // For iOS/Safari: play briefly to force initial frame decode
+                if (this.isIOS || this.isSafari) {
+                    const playPromise = this.video.play();
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                // Pause after a tiny bit to lock in the first frame
+                                setTimeout(() => {
+                                    this.video.pause();
+                                    this.video.currentTime = 0;
+                                }, 50);
+                            })
+                            .catch(error => {
+                                console.warn('Video autoplay blocked:', error);
+                            });
                     }
-                });
+                }
+            }
 
-                // Update Progress Bar
-                const totalScroll = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-                document.getElementById('progress-bar').style.height = (totalScroll * 100) + '%';
+            onLoadedMetadata() {
+                this.videoDuration = this.video.duration;
+                this.isLoaded = true;
+                this.drawFrame();
+            }
 
-                requestAnimationFrame(update);
-            };
+            onSeeked() {
+                this.isSeeking = false;
+                this.currentTime = this.video.currentTime;
+                this.drawFrame();
+            }
 
-            requestAnimationFrame(update);
+            drawFrame() {
+                if (!this.isLoaded) return;
+                
+                try {
+                    // Fill background
+                    this.ctx.fillStyle = '#000000';
+                    this.ctx.fillRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+                    
+                    // Draw video frame if ready
+                    if (this.video.readyState >= 2) {
+                        const canvasWidth = this.canvas.clientWidth;
+                        const canvasHeight = this.canvas.clientHeight;
+                        const videoAspect = this.video.videoWidth / this.video.videoHeight;
+                        const canvasAspect = canvasWidth / canvasHeight;
+                        
+                        let drawWidth, drawHeight, drawX, drawY;
+                        
+                        if (videoAspect > canvasAspect) {
+                            // Video is wider, fit to height
+                            drawHeight = canvasHeight;
+                            drawWidth = canvasHeight * videoAspect;
+                            drawX = (canvasWidth - drawWidth) / 2;
+                            drawY = 0;
+                        } else {
+                            // Video is taller, fit to width
+                            drawWidth = canvasWidth;
+                            drawHeight = canvasWidth / videoAspect;
+                            drawX = 0;
+                            drawY = (canvasHeight - drawHeight) / 2;
+                        }
+                        
+                        this.ctx.drawImage(this.video, drawX, drawY, drawWidth, drawHeight);
+                    }
+                } catch (error) {
+                    console.warn('Canvas draw error (expected on iOS cross-origin):', error);
+                }
+            }
+
+            startAnimationLoop() {
+                const loop = () => {
+                    if (!this.isLoaded) {
+                        this.animationFrameId = requestAnimationFrame(loop);
+                        return;
+                    }
+
+                    // Calculate scroll position within section
+                    const rect = this.section.getBoundingClientRect();
+                    const scrollPercent = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
+                    
+                    // Calculate target time
+                    this.targetTime = scrollPercent * this.videoDuration;
+                    
+                    // Smooth interpolation (lerp)
+                    this.currentTime = this.lerp(this.currentTime, this.targetTime, 0.15);
+                    
+                    // Seek guard: only seek if not already seeking and difference is significant
+                    if (!this.isSeeking && Math.abs(this.currentTime - this.video.currentTime) > 0.02) {
+                        try {
+                            this.video.currentTime = this.currentTime;
+                        } catch (error) {
+                            console.warn('Seek error:', error);
+                        }
+                    }
+                    
+                    // Draw current frame
+                    this.drawFrame();
+                    
+                    // Update global progress bar
+                    const totalScroll = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+                    document.getElementById('progress-bar').style.height = (totalScroll * 100) + '%';
+
+                    this.animationFrameId = requestAnimationFrame(loop);
+                };
+
+                this.animationFrameId = requestAnimationFrame(loop);
+            }
+
+            lerp(start, end, amt) {
+                return (1 - amt) * start + amt * end;
+            }
+
+            destroy() {
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                }
+            }
+        }
+
+        // Initialize scrubber
+        const scrubber = new ScrollScrubber('section-1', 'video-1', 'canvas-1');
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            scrubber.destroy();
+        });
+
+        // Handle visibility changes to pause/resume animation loop
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                scrubber.destroy();
+            } else {
+                scrubber.startAnimationLoop();
+            }
         });
     </script>
 </body>
