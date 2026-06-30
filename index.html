@@ -42,7 +42,7 @@
             width: 100%;
         }
 
-        /* Layered Video Section */
+        /* Video Section */
         .video-section {
             position: relative;
             height: 300vh;
@@ -67,27 +67,7 @@
             background-color: var(--bg-color);
         }
 
-        /* Content overlay block (scrolls up naturally) */
-        .content-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: var(--bg-color);
-            z-index: 2;
-        }
-
-        .content-overlay-inner {
-            width: 100%;
-            height: 100%;
-            padding: 3rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Hidden video elements for data only */
+        /* Hidden video element for data only */
         video {
             position: absolute;
             top: -9999px;
@@ -96,104 +76,6 @@
             height: 1px;
             visibility: hidden;
             pointer-events: none;
-        }
-
-        /* Card Grid */
-        .cards-container {
-            width: 100%;
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            padding: 0 2rem;
-        }
-
-        .card {
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-color);
-        }
-
-        .card-artwork {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background-color: #141720;
-            margin-bottom: 2rem;
-        }
-
-        .card.vintage-vice .card-artwork {
-            background-color: #242B3F;
-        }
-
-        .card-title {
-            font-size: clamp(1.25rem, 3vw, 1.75rem);
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: -0.01em;
-            line-height: 1.2;
-            margin-bottom: 2rem;
-            color: var(--text-color);
-        }
-
-        .card-button {
-            align-self: flex-start;
-            background-color: transparent;
-            border: 2px solid var(--text-color);
-            color: var(--text-color);
-            padding: 0.875rem 2rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            cursor: pointer;
-            font-family: var(--font-stack);
-            transition: all 0.2s ease;
-        }
-
-        .card-button:hover {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-            border-color: var(--text-color);
-        }
-
-        .card-button:active {
-            opacity: 0.8;
-        }
-
-        /* Text Content Block */
-        .text-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: var(--bg-color);
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .text-content {
-            max-width: 800px;
-            padding: 3rem 2rem;
-            width: 100%;
-        }
-
-        .section-header {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 2rem;
-            color: var(--text-color);
-            line-height: 1.2;
-        }
-
-        .section-paragraph {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.85);
         }
 
         /* Scroll Indicator */
@@ -228,20 +110,6 @@
         }
 
         @media (max-width: 768px) {
-            .cards-container {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-                padding: 0 1.5rem;
-            }
-
-            .content-overlay-inner {
-                padding: 2rem 1.5rem;
-            }
-
-            .text-content {
-                padding: 2rem 1.5rem;
-            }
-
             .scroll-indicator {
                 right: 1rem;
             }
@@ -257,48 +125,13 @@
 <body>
 
     <div class="scroll-container">
-        <!-- Stage 1: Video Scroll with Card Overlay -->
+        <!-- Single Video Scroll Track -->
         <section class="video-section" id="section-1">
             <div class="video-wrapper">
                 <canvas id="canvas-1"></canvas>
                 <video id="video-1" muted playsinline preload="auto" crossorigin="anonymous">
                     <source src="2160.09zxlcbb6vg7y.mp4" type="video/mp4">
                 </video>
-            </div>
-            
-            <div class="content-overlay">
-                <div class="content-overlay-inner">
-                    <div class="cards-container">
-                        <div class="card">
-                            <div class="card-artwork"></div>
-                            <h3 class="card-title">Ultimate Edition</h3>
-                            <button class="card-button">Learn More</button>
-                        </div>
-                        
-                        <div class="card vintage-vice">
-                            <div class="card-artwork"></div>
-                            <h3 class="card-title">Vintage Vice City Pack</h3>
-                            <button class="card-button">Learn More</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stage 2: Video Scroll with Text Overlay -->
-        <section class="video-section" id="section-2">
-            <div class="video-wrapper">
-                <canvas id="canvas-2"></canvas>
-                <video id="video-2" muted playsinline preload="auto" crossorigin="anonymous">
-                    <source src="2160.09zxlcbb6vg7y.mp4" type="video/mp4">
-                </video>
-            </div>
-            
-            <div class="text-overlay">
-                <div class="text-content">
-                    <h2 class="section-header">Vice City, USA.</h2>
-                    <p class="section-paragraph">Jason and Lucia have always known the deck is stacked against them. But when an easy score goes wrong, they find themselves on the darkest side of the sunniest place in America, in the middle of a criminal conspiracy stretching across the state of Leonida — forced to rely on each other more than ever if they want to make it out alive.</p>
-                </div>
             </div>
         </section>
     </div>
@@ -307,10 +140,10 @@
         <div class="scroll-progress" id="progress-bar"></div>
     </div>
 
-    <div class="ui-label">Scroll to Experience</div>
+    <div class="ui-label">Scroll to Scrub</div>
 
     <script>
-        class LayeredScrollScrubber {
+        class ScrollScrubber {
             constructor(sectionId, videoId, canvasId) {
                 this.section = document.getElementById(sectionId);
                 this.video = document.getElementById(videoId);
@@ -323,8 +156,6 @@
                 this.currentTime = 0;
                 this.videoDuration = 0;
                 this.animationFrameId = null;
-                this.currentAlpha = 1;
-                this.targetAlpha = 1;
                 this.lastDrawnTime = -1;
                 
                 // Device detection
@@ -387,7 +218,7 @@
                 
                 try {
                     // Only draw if video is ready and has a valid frame
-                    if (this.video.readyState >= 2 && this.currentAlpha > 0.01) {
+                    if (this.video.readyState >= 2) {
                         const canvasWidth = this.canvas.clientWidth;
                         const canvasHeight = this.canvas.clientHeight;
                         const videoAspect = this.video.videoWidth / this.video.videoHeight;
@@ -407,13 +238,8 @@
                             drawY = (canvasHeight - drawHeight) / 2;
                         }
                         
-                        // Only draw if alpha > 0
-                        if (this.currentAlpha > 0) {
-                            this.ctx.globalAlpha = this.currentAlpha;
-                            this.ctx.drawImage(this.video, drawX, drawY, drawWidth, drawHeight);
-                            this.ctx.globalAlpha = 1;
-                            this.lastDrawnTime = this.video.currentTime;
-                        }
+                        this.ctx.drawImage(this.video, drawX, drawY, drawWidth, drawHeight);
+                        this.lastDrawnTime = this.video.currentTime;
                     }
                 } catch (error) {
                     console.warn('Canvas draw error:', error);
@@ -436,19 +262,6 @@
                     
                     // Smooth interpolation (lerp)
                     this.currentTime = this.lerp(this.currentTime, this.targetTime, 0.15);
-                    
-                    // Calculate fade: opacity fades from 1.0 to 0.0 between 66% (200vh) and 100% (300vh)
-                    const fadeStartPercent = 0.66;
-                    if (scrollPercent >= fadeStartPercent) {
-                        const fadeRange = 1 - fadeStartPercent;
-                        const fadeProgress = (scrollPercent - fadeStartPercent) / fadeRange;
-                        this.targetAlpha = Math.max(0, 1 - fadeProgress);
-                    } else {
-                        this.targetAlpha = 1;
-                    }
-                    
-                    // Smooth alpha interpolation
-                    this.currentAlpha = this.lerp(this.currentAlpha, this.targetAlpha, 0.1);
                     
                     // Robust seeking guard: only seek if video is NOT currently seeking and the difference is meaningful (0.03 seconds)
                     const SEEK_THRESHOLD = 0.03;
@@ -490,24 +303,20 @@
             }
         }
 
-        // Initialize both scrubbers
-        const scrubber1 = new LayeredScrollScrubber('section-1', 'video-1', 'canvas-1');
-        const scrubber2 = new LayeredScrollScrubber('section-2', 'video-2', 'canvas-2');
+        // Initialize single scrubber
+        const scrubber = new ScrollScrubber('section-1', 'video-1', 'canvas-1');
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
-            scrubber1.destroy();
-            scrubber2.destroy();
+            scrubber.destroy();
         });
 
         // Handle visibility changes
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                scrubber1.destroy();
-                scrubber2.destroy();
+                scrubber.destroy();
             } else {
-                scrubber1.startAnimationLoop();
-                scrubber2.startAnimationLoop();
+                scrubber.startAnimationLoop();
             }
         });
     </script>
